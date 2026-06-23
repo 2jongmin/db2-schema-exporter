@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * SchemaService 구현체
@@ -164,7 +165,7 @@ public class SchemaServiceImpl implements SchemaService {
                 .filter(ColumnInfo::isPrimaryKey)
                 .sorted(Comparator.comparingInt(ColumnInfo::getPkPosition))
                 .map(ColumnInfo::getColumnName)
-                .toList();
+                .collect(Collectors.toList());
 
         boolean hasPk = config.isIncludePrimaryKey() && !pkCols.isEmpty();
 

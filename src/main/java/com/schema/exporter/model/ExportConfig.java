@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 내보내기 설정 - Spring @Value 로 database.properties 주입
@@ -73,6 +74,6 @@ public class ExportConfig {
         return Arrays.stream(tablesRaw.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .toList();
+                .collect(Collectors.toList());
     }
 }
