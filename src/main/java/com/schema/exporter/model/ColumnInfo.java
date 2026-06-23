@@ -1,12 +1,16 @@
 package com.schema.exporter.model;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
- * DB2 테이블 컬럼 정보 모델
+ * DB2 컬럼 정보 모델
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ColumnInfo {
 
@@ -16,22 +20,22 @@ public class ColumnInfo {
     /** 컬럼명 */
     private String columnName;
 
-    /** 한글명 (컬럼 COMMENT) */
+    /** 한글명 (COMMENT) */
     private String columnComment;
 
-    /** 데이터 타입 */
+    /** 데이터 타입 (e.g. VARCHAR) */
     private String dataType;
 
-    /** 전체 타입 (길이 포함 e.g. VARCHAR(100)) */
+    /** 전체 타입 (e.g. VARCHAR(100)) - 서비스에서 조합 */
     private String fullDataType;
 
-    /** 길이/크기 */
-    private Integer columnLength;
+    /** 길이 */
+    private int columnLength;
 
     /** 소수점 자리수 */
-    private Integer decimalDigits;
+    private int decimalDigits;
 
-    /** NOT NULL 여부 */
+    /** NULL 허용 여부 */
     private boolean nullable;
 
     /** PK 여부 */

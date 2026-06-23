@@ -1,50 +1,54 @@
 package com.schema.exporter.model;
 
-import lombok.Builder;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * 내보내기 설정 모델
+ * 내보내기 설정 - Spring @Value 로 database.properties 주입
  */
 @Data
-@Builder
+@Component
 public class ExportConfig {
 
-    /** DB 접속 URL */
-    private String dbUrl;
-
-    /** DB 사용자명 */
-    private String dbUsername;
-
-    /** DB 비밀번호 */
-    private String dbPassword;
-
-    /** 스키마명 */
+    @Value("${db.schema}")
     private String schema;
 
-    /** 추출 대상 테이블 목록 (비어 있으면 전체) */
-    private List<String> targetTables;
+    @Value("${export.tables:}")
+    private String tablesRaw;
 
-    /** 엑셀 출력 경로 */
+    @Value("${excel.output.path:./output}")
     private String outputPath;
 
-    /** 엑셀 파일명 (확장자 제외) */
+    @Value("${excel.output.filename:DB2_Schema_Export}")
     private String outputFilename;
 
-    /** 날짜 포함 여부 */
+    @Value("${excel.include.date:true}")
     private boolean includeDate;
 
-    /** PK 제약조건 포함 여부 */
+    @Value("${ddl.include.primary.key:true}")
     private boolean includePrimaryKey;
 
-    /** 인덱스 포함 여부 */
+    @Value("${ddl.include.index:true}")
     private boolean includeIndex;
 
-    /** COMMENT 포함 여부 */
+    @Value("${ddl.include.comment:true}")
     private boolean includeComment;
 
-    /** 기본 테이블스페이스 */
+    @Value("${ddl.tablespace:USERSPACE1}")
     private String tablespace;
+
+    public List<String> getTargetTables() {
+        if (tablesRaw == null || tablesRaw.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(tablesRaw.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+    }
 }

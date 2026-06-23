@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+               https://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+               https://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+               https://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- ===================== Properties 로드 ===================== -->
+    <context:property-placeholder location="classpath:database.properties"/>
+
+    <!-- ===================== Component Scan ===================== -->
+    <context:component-scan base-package="com.schema.exporter"/>
+
+    <!-- ===================== HikariCP DataSource ===================== -->
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="jdbcUrl"         value="${db.url}"/>
+        <property name="username"        value="${db.username}"/>
+        <property name="password"        value="${db.password}"/>
+        <property name="maximumPoolSize" value="${db.pool.maximumPoolSize}"/>
+        <property name="minimumIdle"     value="${db.pool.minimumIdle}"/>
+        <property name="connectionTimeout" value="${db.pool.connectionTimeout}"/>
+        <property name="idleTimeout"     value="${db.pool.idleTimeout}"/>
+        <property name="maxLifetime"     value="${db.pool.maxLifetime}"/>
+        <property name="poolName"        value="Db2SchemaPool"/>
+    </bean>
+
+    <!-- ===================== MyBatis SqlSessionFactory ===================== -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource"    ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!-- ===================== MyBatis SqlSessionTemplate ===================== -->
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+
+    <!-- ===================== Transaction Manager ===================== -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

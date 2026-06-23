@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.schema.exporter.mapper.SchemaMapper">
+
+    <!-- =========================================================
+         테이블 목록 조회
+    ========================================================== -->
+    <select id="selectTableList" parameterType="string" resultType="TableInfo">
+        SELECT
+            TABSCHEMA  AS schemaName,
+            TABNAME    AS tableName,
+            REMARKS    AS tableComment,
+            TBSPACE    AS tablespace
+        FROM SYSCAT.TABLES
+        WHERE TABSCHEMA = #{schema}
+          AND TYPE      = 'T'
+        ORDER BY TABNAME
+    </select>
+
+    <!-- =========================================================
+         특정 테이블 목록 조회 (targetTables 지정 시)
+    ========================================================== -->
+    <select id="selectTableListByNames" resultType="TableInfo">
+        SELECT
+            TABSCHEMA  AS schemaName,
+            TABNAME    AS tableName,
+            REMARKS    AS tableComment,
+            TBSPACE    AS tablespace
+        FROM SYSCAT.TABLES
+        WHERE TABSCHEMA = #{schema}
+          AND TYPE      = 'T'
+          AND TABNAME IN
+          <foreach collection="tableNames" item="name" open="(" separator="," close=")">
+              #{name}
+          </foreach>
+        ORDER BY TABNAME
+    </select>
+
+    <!-- =========================================================
+         단일 테이블 조회
+    ========================================================== -->
+    <select id="selectTable" resultType="TableInfo">
+        SELECT
+            TABSCHEMA  AS schemaName,
+            TABNAME    AS tableName,
+            REMARKS    AS tableComment,
+            TBSPACE    AS tablespace
+        FROM SYSCAT.TABLES
+        WHERE TABSCHEMA = #{schema}
+          AND TABNAME   = #{tableName}
+    </select>
+
+    <!-- =========================================================
+         컬럼 목록 조회
+    ========================================================== -->
+    <select id="selectColumnList" resultType="ColumnInfo">
+        SELECT
+            (C.COLNO + 1)  AS ordinalPosition,
+            C.COLNAME      AS columnName,
+            C.REMARKS      AS columnComment,
+            C.TYPENAME     AS dataType,
+            C.LENGTH       AS columnLength,
+            C.SCALE        AS decimalDigits,
+            CASE WHEN C.NULLS = 'Y' THEN true ELSE false END AS nullable,
+            COALESCE(C.DEFAULT, '') AS defaultValue
+        FROM SYSCAT.COLUMNS C
+        WHERE C.TABSCHEMA = #{schema}
+          AND C.TABNAME   = #{tableName}
+        ORDER BY C.COLNO
+    </select>
+
+    <!-- =========================================================
+         PK 컬럼 조회
+    ========================================================== -->
+    <select id="selectPrimaryKeyColumns" resultType="ColumnInfo">
+        SELECT
+            KC.COLNAME   AS columnName,
+            KC.COLSEQ    AS pkPosition
+        FROM SYSCAT.KEYCOLUSE KC
+        INNER JOIN SYSCAT.TABCONST TC
+            ON KC.CONSTNAME = TC.CONSTNAME
+           AND KC.TABSCHEMA = TC.TABSCHEMA
+           AND KC.TABNAME   = TC.TABNAME
+        WHERE TC.TABSCHEMA = #{schema}
+          AND TC.TABNAME   = #{tableName}
+          AND TC.TYPE      = 'P'
+        ORDER BY KC.COLSEQ
+    </select>
+
+    <!-- =========================================================
+         인덱스 컬럼 조회
+    ========================================================== -->
+    <select id="selectIndexColumns" resultType="ColumnInfo">
+        SELECT
+            IC.COLNAME   AS columnName,
+            I.INDNAME    AS indexName
+        FROM SYSCAT.INDEXCOLUSE IC
+        INNER JOIN SYSCAT.INDEXES I
+            ON IC.INDSCHEMA = I.INDSCHEMA
+           AND IC.INDNAME   = I.INDNAME
+        WHERE I.TABSCHEMA  = #{schema}
+          AND I.TABNAME    = #{tableName}
+          AND I.UNIQUERULE != 'P'
+        ORDER BY I.INDNAME, IC.COLSEQ
+    </select>
+
+</mapper>
