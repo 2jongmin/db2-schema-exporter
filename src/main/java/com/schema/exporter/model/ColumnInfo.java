@@ -1,55 +1,84 @@
 package com.schema.exporter.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 /**
  * DB2 컬럼 정보 모델
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ColumnInfo {
 
-    /** 순번 */
-    private int ordinalPosition;
-
-    /** 컬럼명 */
+    private int    ordinalPosition;
     private String columnName;
-
-    /** 한글명 (COMMENT) */
     private String columnComment;
-
-    /** 데이터 타입 (e.g. VARCHAR) */
     private String dataType;
-
-    /** 전체 타입 (e.g. VARCHAR(100)) - 서비스에서 조합 */
     private String fullDataType;
-
-    /** 길이 */
-    private int columnLength;
-
-    /** 소수점 자리수 */
-    private int decimalDigits;
-
-    /** NULL 허용 여부 */
+    private int    columnLength;
+    private int    decimalDigits;
     private boolean nullable;
-
-    /** PK 여부 */
     private boolean primaryKey;
-
-    /** PK 순번 */
-    private int pkPosition;
-
-    /** 기본값 */
+    private int    pkPosition;
     private String defaultValue;
-
-    /** 인덱스 여부 */
     private boolean indexed;
-
-    /** 인덱스명 */
     private String indexName;
+
+    public ColumnInfo() {}
+
+    // ── Getters ──
+    public int     getOrdinalPosition() { return ordinalPosition; }
+    public String  getColumnName()      { return columnName; }
+    public String  getColumnComment()   { return columnComment; }
+    public String  getDataType()        { return dataType; }
+    public String  getFullDataType()    { return fullDataType; }
+    public int     getColumnLength()    { return columnLength; }
+    public int     getDecimalDigits()   { return decimalDigits; }
+    public boolean isNullable()         { return nullable; }
+    public boolean isPrimaryKey()       { return primaryKey; }
+    public int     getPkPosition()      { return pkPosition; }
+    public String  getDefaultValue()    { return defaultValue; }
+    public boolean isIndexed()          { return indexed; }
+    public String  getIndexName()       { return indexName; }
+
+    // ── Setters ──
+    public void setOrdinalPosition(int ordinalPosition)    { this.ordinalPosition = ordinalPosition; }
+    public void setColumnName(String columnName)           { this.columnName = columnName; }
+    public void setColumnComment(String columnComment)     { this.columnComment = columnComment; }
+    public void setDataType(String dataType)               { this.dataType = dataType; }
+    public void setFullDataType(String fullDataType)       { this.fullDataType = fullDataType; }
+    public void setColumnLength(int columnLength)          { this.columnLength = columnLength; }
+    public void setDecimalDigits(int decimalDigits)        { this.decimalDigits = decimalDigits; }
+    public void setNullable(boolean nullable)              { this.nullable = nullable; }
+    public void setPrimaryKey(boolean primaryKey)          { this.primaryKey = primaryKey; }
+    public void setPkPosition(int pkPosition)              { this.pkPosition = pkPosition; }
+    public void setDefaultValue(String defaultValue)       { this.defaultValue = defaultValue; }
+    public void setIndexed(boolean indexed)                { this.indexed = indexed; }
+    public void setIndexName(String indexName)             { this.indexName = indexName; }
+
+    // ── Builder ──
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+        private final ColumnInfo obj = new ColumnInfo();
+        public Builder ordinalPosition(int v)    { obj.ordinalPosition = v; return this; }
+        public Builder columnName(String v)      { obj.columnName = v;      return this; }
+        public Builder columnComment(String v)   { obj.columnComment = v;   return this; }
+        public Builder dataType(String v)        { obj.dataType = v;        return this; }
+        public Builder fullDataType(String v)    { obj.fullDataType = v;    return this; }
+        public Builder columnLength(int v)       { obj.columnLength = v;    return this; }
+        public Builder decimalDigits(int v)      { obj.decimalDigits = v;   return this; }
+        public Builder nullable(boolean v)       { obj.nullable = v;        return this; }
+        public Builder primaryKey(boolean v)     { obj.primaryKey = v;      return this; }
+        public Builder pkPosition(int v)         { obj.pkPosition = v;      return this; }
+        public Builder defaultValue(String v)    { obj.defaultValue = v;    return this; }
+        public Builder indexed(boolean v)        { obj.indexed = v;         return this; }
+        public Builder indexName(String v)       { obj.indexName = v;       return this; }
+        public ColumnInfo build()                { return obj; }
+    }
+
+    @Override
+    public String toString() {
+        return "ColumnInfo{" +
+                "columnName='" + columnName + '\'' +
+                ", fullDataType='" + fullDataType + '\'' +
+                ", nullable=" + nullable +
+                ", primaryKey=" + primaryKey +
+                '}';
+    }
 }
