@@ -230,7 +230,7 @@ public class ExcelServiceImpl implements ExcelService {
             Row sh = ws.createRow(ri++); sh.setHeightInPoints(18);
             ws.addMergedRegion(new CellRangeAddress(ri - 1, ri - 1, 0, 0));
             String label = t.getTableName()
-                    + (nvl(t.getTableComment()).isBlank() ? "" : "  (" + t.getTableComment() + ")");
+                    + (nvl(t.getTableComment()).trim().isEmpty() ? "" : "  (" + t.getTableComment() + ")");
             cell(sh, 0, label, secSt);
 
             for (String line : t.getDdlScript().split("\n")) {
