@@ -20,7 +20,7 @@
         <spring.version>5.3.31</spring.version>
         <mybatis.version>3.5.15</mybatis.version>
         <mybatis-spring.version>2.1.2</mybatis-spring.version>
-        <poi.version>5.2.5</poi.version>
+        <poi.version>3.7</poi.version>
     </properties>
 
     <dependencies>

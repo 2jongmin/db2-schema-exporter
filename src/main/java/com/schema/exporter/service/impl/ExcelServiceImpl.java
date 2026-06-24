@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,14 +58,19 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public String export(List<TableInfo> tables) throws IOException {
-        try (XSSFWorkbook wb = new XSSFWorkbook()) {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        try {
             buildIndexSheet(wb, tables);
-            tables.forEach(t -> buildTableSheet(wb, t));
+            for (TableInfo t : tables) {
+                buildTableSheet(wb, t);
+            }
             buildDdlSheet(wb, tables);
 
             String path = saveFile(wb);
             log.info("엑셀 생성 완료: {}", path);
             return path;
+        } finally {
+            wb.close();
         }
     }
 
@@ -249,12 +254,15 @@ public class ExcelServiceImpl implements ExcelService {
         String dir  = config.getOutputPath();
         String base = config.getOutputFilename();
         String ts   = config.isIncludeDate()
-                ? "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+                ? "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())
                 : "";
         new File(dir).mkdirs();
         String path = dir + File.separator + base + ts + ".xlsx";
-        try (FileOutputStream fos = new FileOutputStream(path)) {
+        FileOutputStream fos = new FileOutputStream(path);
+        try {
             wb.write(fos);
+        } finally {
+            fos.close();
         }
         return path;
     }
@@ -417,7 +425,7 @@ public class ExcelServiceImpl implements ExcelService {
     private String nvl(String v) { return v != null ? v : ""; }
 
     private String now() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
     private static byte[] rgb(String hex) {
