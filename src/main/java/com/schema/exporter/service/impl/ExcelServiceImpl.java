@@ -59,19 +59,15 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public String export(List<TableInfo> tables) throws IOException {
         XSSFWorkbook wb = new XSSFWorkbook();
-        try {
-            buildIndexSheet(wb, tables);
-            for (TableInfo t : tables) {
-                buildTableSheet(wb, t);
-            }
-            buildDdlSheet(wb, tables);
-
-            String path = saveFile(wb);
-            log.info("엑셀 생성 완료: {}", path);
-            return path;
-        } finally {
-            wb.close();
+        buildIndexSheet(wb, tables);
+        for (TableInfo t : tables) {
+            buildTableSheet(wb, t);
         }
+        buildDdlSheet(wb, tables);
+
+        String path = saveFile(wb);
+        log.info("엑셀 생성 완료: {}", path);
+        return path;
     }
 
     // ═══════════════════════════════════════════════════
